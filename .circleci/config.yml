@@ -13,6 +13,7 @@ jobs:
       - image: circleci/python:2.7
     steps:
       - checkout
+      - run: sudo apt-get install swig
       - run: pip install --requirement requirements-freeze.txt
       - run: pip wheel --requirement requirements-freeze.txt --wheel-dir vendor
       - persist_to_workspace:
