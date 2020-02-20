@@ -8,9 +8,48 @@ jobs:
           name: Run tests
           command: make test
 
+  vendor:
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - run:
+          name: install required build dependencies
+          command: sudo apt-get install swig
+      - run: pip wheel --requirement requirements-freeze.txt --wheel-dir vendor
+      - persist_to_workspace:
+          root: .
+          paths:
+            - vendor
+
+  deploy:
+    docker:
+      - image: 18fgsa/cloud-foundry-cli
+        environment:
+          CF_API: https://api.fr.cloud.gov
+    steps:
+      - checkout
+      - attach_workspace:
+            at: .
+      - deploy:
+          name: Push to Cloud Foundry
+          command: cf_deploy.sh inventory sandbox-gsa bret.mogilefsky
+
 
 workflows:
   version: 2
   commit:
     jobs:
       - build
+      - vendor:
+          filters:
+            branches:
+              only:
+                - master
+      - deploy:
+          requires:
+            - vendor
+          filters:
+            branches:
+              only:
+                - master
