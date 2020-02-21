@@ -16,9 +16,6 @@ jobs:
       - run:
           name: install required build dependencies
           command: sudo apt-get install swig
-      - run:
-          name: install python dependencies
-          command: pip install --requirement requirements-freeze.txt
       - run: pip wheel --requirement requirements-freeze.txt --wheel-dir vendor
       - persist_to_workspace:
           root: .
@@ -51,4 +48,4 @@ workflows:
           filters:
             branches:
               only:
-                - adborden/cloud.gov
+                - adborden/cloud.gov-2
